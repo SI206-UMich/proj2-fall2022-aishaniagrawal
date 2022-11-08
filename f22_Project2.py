@@ -25,8 +25,19 @@ def get_listings_from_search_results(html_file):
         ('Loft in Mission District', 210, '1944564'),  # example
     ]
     """
-    pass
 
+    # find line; loop through it; get title, cost, id; make tuples; add to list
+    f = open(html_file, 'r')
+    return_list = []
+
+    data = BeautifulSoup(f, 'html.parser')
+    title = data.find('div', class_ = 't1jojoys dir dir-ltr' )
+    
+    print(title)
+    
+    return return_list
+
+get_listings_from_search_results('html_files/mission_district_search_results.html')
 
 def get_listing_information(listing_id):
     """
@@ -134,6 +145,7 @@ def extra_credit(listing_id):
     never gone over their limit.
     """
     pass
+
 
 
 class TestCases(unittest.TestCase):
