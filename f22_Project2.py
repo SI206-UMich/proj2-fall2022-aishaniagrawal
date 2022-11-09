@@ -217,7 +217,7 @@ def write_csv(data, filename):
 
     This function should not return anything.
     """
-    data = sorted(data, key=operator.itemgetter(2))
+    data = sorted(data, key=operator.itemgetter(1))
     with open(filename, 'w', newline = '') as f:
         w = csv.DictWriter(f, ["Listing Title", "Cost", "Listing ID", "Policy Number", "Place Type", "Number of Bedrooms"])
         w.writeheader()
@@ -225,17 +225,11 @@ def write_csv(data, filename):
             d = {}
             d["Listing Title"] = item[0]
             d["Cost"] = item[1]
-
-#  data = sorted(data, key=operator.itemgetter(2))
-#  with open(filename, "w", newline="") as f:
-#         w = csv.DictWriter(f, ["Book Title", "Author", "Ratings"])
-#         w.writeheader()
-#         for item in data:
-#             dic = dict()
-#             dic["Book Title"] = item[0]
-#             dic["Author"] = item[1]
-#             dic["Ratings"] = item[2]
-#             w.writerow(dic)
+            d["Listing ID"] = item[2]
+            d["Policy Number"] = item[3]
+            d["Place Type"] = item[4]
+            d["Number of Bedrooms"] = item[5]
+            w.writerow(d)
 
 
 def check_policy_numbers(data):
