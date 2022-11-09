@@ -1,9 +1,15 @@
+# Your name: Aishani Agrawal
+# Your student id: 17336946
+# Your email: aishania@umich.edu
+# List who you have worked with on this project: Blair Bocklet
+
 from xml.sax import parseString
 from bs4 import BeautifulSoup
 import re
 import os
 import csv
 import unittest
+import operator
 
 
 def get_listings_from_search_results(html_file):
@@ -65,7 +71,7 @@ def get_listings_from_search_results(html_file):
         return_list.append(tup)
         count += 1
     print(return_list)
-    
+    f.close()
     return return_list
 
 get_listings_from_search_results('html_files/mission_district_search_results.html')
@@ -94,7 +100,66 @@ def get_listing_information(listing_id):
         number of bedrooms
     )
     """
-    pass
+    html_file = f"html_files/listing_{listing_id}.html"
+
+    f = open(html_file, 'r')
+    file_data = f.read()
+    
+    data = BeautifulSoup(file_data, 'html.parser')
+
+    policy = data.find_all('li', class_ = 'f19phm7j dir dir-ltr')[0].text
+    
+    if "policy number: pending" in policy.lower():
+        policy = "Pending"
+
+    elif "policy number: exempt" in policy.lower():
+        policy = "Exempt"
+
+    elif "policy number: license not needed per ostr" in policy.lower():
+        policy = "Exempt"
+    
+    if "policy number: " in policy.lower():
+        policy = policy.lstrip("Policy number: ")
+   
+    place = data.find_all('h2', class_="_14i3z6h")[0].text
+    
+    if "private" in place.lower():
+        place = "Private Room"
+
+    elif "shared" in place.lower():
+        place = "Shared Room"
+
+    else: 
+        place = "Entire Room"
+
+    
+    rooms = data.find_all('li', class_= "l7n4lsf dir dir-ltr")
+
+    br_code = rooms[1].text.split()
+
+    
+
+    if br_code[1].lower() == 'studio':
+        num_br = 1
+    else:  
+        num_br = int(br_code[1])
+
+    # print("---------------")
+    # print(br_code)
+    # print(num_br)
+    # print("---------------")
+
+
+
+    # print(policy)
+    # print(place)
+    # print(num_br)
+    # print("******")
+
+    f.close()
+
+    return (policy, place, num_br)
+
 
 
 def get_detailed_listing_database(html_file):
@@ -111,7 +176,23 @@ def get_detailed_listing_database(html_file):
         ...
     ]
     """
-    pass
+    return_list = []
+    search_results = get_listings_from_search_results(html_file)
+
+    for result in search_results:
+        id = result[2]
+        # print(id)
+        information = get_listing_information(id)
+        # print(information)
+
+        new_tup = (result[0], result[1], result[2], information[0], information[1], information[2])
+        # print(new_tup)
+        return_list.append(new_tup)
+        # print(return_list)
+
+
+    return return_list
+
 
 
 def write_csv(data, filename):
@@ -136,7 +217,25 @@ def write_csv(data, filename):
 
     This function should not return anything.
     """
-    pass
+    data = sorted(data, key=operator.itemgetter(2))
+    with open(filename, 'w', newline = '') as f:
+        w = csv.DictWriter(f, ["Listing Title", "Cost", "Listing ID", "Policy Number", "Place Type", "Number of Bedrooms"])
+        w.writeheader()
+        for item in data:
+            d = {}
+            d["Listing Title"] = item[0]
+            d["Cost"] = item[1]
+
+#  data = sorted(data, key=operator.itemgetter(2))
+#  with open(filename, "w", newline="") as f:
+#         w = csv.DictWriter(f, ["Book Title", "Author", "Ratings"])
+#         w.writeheader()
+#         for item in data:
+#             dic = dict()
+#             dic["Book Title"] = item[0]
+#             dic["Author"] = item[1]
+#             dic["Ratings"] = item[2]
+#             w.writerow(dic)
 
 
 def check_policy_numbers(data):
