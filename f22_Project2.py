@@ -28,12 +28,43 @@ def get_listings_from_search_results(html_file):
 
     # find line; loop through it; get title, cost, id; make tuples; add to list
     f = open(html_file, 'r')
+    title_list = []
+    cost_list = []
+    id_list = []
+    ids = []
     return_list = []
 
     data = BeautifulSoup(f, 'html.parser')
-    title = data.find('div', class_ = 't1jojoys dir dir-ltr' )
+    title_tags = data.find_all('div', class_ = 't1jojoys')
+    # print(title_tags)
+    cost_tags = data.find_all('span', class_ = '_tyxjp1')
+    # print(cost_tags)
     
-    print(title)
+    for title in title_tags:
+        title_list.append(title.text)
+    print(title_list)
+
+    for cost in cost_tags:
+        cost_list.append(int(cost.text.strip('$')))
+    print(cost_list)
+
+    for item in title_tags:
+        id = item.get('id', None)
+        id_list.append(id)
+    # print(id_list)
+
+    for id in id_list:
+        pair = id.split('_')
+       # print(pair)
+        ids.append(pair[1])
+    print(ids)
+
+    count = 0
+    while count < len(title_list):
+        tup = title_list[count], cost_list[count], ids[count]
+        return_list.append(tup)
+        count += 1
+    print(return_list)
     
     return return_list
 
