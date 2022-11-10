@@ -251,7 +251,15 @@ def check_policy_numbers(data):
     ]
 
     """
-    pass
+    listing_id = []
+    reg_ex = r'\w{3,4}-\d{6,7}[A-Z]*'
+    for item in data:
+        proper_policy = re.findall(reg_ex, item[3])
+        if item[3] in proper_policy:
+            listing_id.append(item[2])
+    # print(listing_id)
+    return listing_id
+
 
 
 def extra_credit(listing_id):
